@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
 
-import structures.Node;
+import structures.Queue;
 
 /**
  * An iterator to perform a level order traversal of part of a 
@@ -20,30 +20,45 @@ public class LevelOrderIterator extends FileIterator<File> {
 	 * @param rootNode
 	 * @throws FileNotFoundException if the rootNode does not exist
 	 */
-	Node<File> root;
+	File root;
+	
+	Queue<File> fileQueue = new Queue<File>();
 	public LevelOrderIterator(File rootNode) throws FileNotFoundException {
 		// TODO 1
-		if(rootNode.exists())
-			root = new Node<File>(rootNode);
-		else
-			throw new FileNotFoundException();
+		if(rootNode.exists()){
+			root = rootNode;
+			fileQueue.enqueue(root);
+		}else{
+			throw new FileNotFoundException("Nothing here, buddie");
+		}
 	}
 	
 	@Override
 	public boolean hasNext() {
-		// TODO 2
-		return false;
+		return !(fileQueue.isEmpty());
 	}
 
 	@Override
 	public File next() throws NoSuchElementException {
-		// TODO 3
-		return null;
+		
+		if(!root.exists())
+			throw new NoSuchElementException();
+		if(hasNext()){
+			File answer =  fileQueue.dequeue();
+			if(answer.isDirectory()){
+				for(File files: answer.listFiles()){
+					fileQueue.enqueue(files);
+				}
+			}
+			return answer;
+		}else{
+			throw new NoSuchElementException("Nothing here, buddie");
+		}
 	}
 
 	@Override
 	public void remove() {
-		// Leave this one alone.
+		// Leave this one alone. Okay!
 		throw new UnsupportedOperationException();		
 	}
 
